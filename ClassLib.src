@@ -1,0 +1,14 @@
+//////////////////////
+// Helper Functions //
+
+extend_map = function(map1, map2)
+    for data in map2
+        map1.push(data)
+    end for
+
+    return map1
+end function
+
+// End Helper Functions //
+//////////////////////////
+
