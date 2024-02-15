@@ -12,3 +12,19 @@ end function
 // End Helper Functions //
 //////////////////////////
 
+////////////////////////////
+// Define initiator class //
+ClassLib = {}
+
+libs = {}
+libs.metax = null
+
+ClassLib.requires_metax = function()
+    if libs.metax == null then
+        libs.metax = include_lib("/lib/metaxploit.so")
+    end if
+end function
+
+// End Initiator Class//
+////////////////////////
+
