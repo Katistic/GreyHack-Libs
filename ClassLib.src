@@ -65,11 +65,10 @@ Network.get_networks = function(device="wlan0")
     networks = []
 
     for network in network_list
-        network_class = new Network
-        network_class.init(network)
-
-        networks.push(network_class)
+        networks.push(Network.init(network))
     end for
+
+    return networks
 end function
 
 // End Network Class //
