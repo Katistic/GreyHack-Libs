@@ -134,3 +134,52 @@ end function
 // End MetaLib Class //
 ///////////////////////
 
+/////////////////////////////
+// Define MetaSploit class //
+
+MetaSploit = {}
+
+// Attributes
+MetaSploit.net_sessions = null
+MetaSploit.router = null
+
+MetaSploit.init = function(pub_ip=null)
+    metasploit = new MetaSploit
+    metasploit._init(pub_ip)
+
+    return metasploit
+end function
+
+MetaSploit._init = function(pub_ip=null)
+    if pub_ip == null then
+        pub_ip = get_shell.host_computer.public_ip
+    end if
+
+    self.router = get_router(pub_ip)
+    self.net_sessions = []
+
+    for port in self.router.used_ports
+        self.net_sessions.push(MetaLib.init(pub_ip, port))
+    end for
+end function
+
+MetaSploit.find_vulnerabilities = function()
+    vulns = []
+    for metalib in self.net_sessions
+        vulns = extend_map(vulns, metalib.find_vulnerabilities())
+    end for
+
+    return vulns
+end function
+
+MetaSploit.find_exploits = function()
+    exploits = []
+    for metalib in self.net_sessions
+        exploits = extend_map(exploits, metalib.find_exploits)
+    end for
+
+    return exploits
+end function
+
+// End MetaSploit Class //
+//////////////////////////
