@@ -1,7 +1,9 @@
 //////////////////////
 // Helper Functions //
 
-extend_map = function(map1, map2)
+extend_map = function(map1, map2) // -> Map
+    // Extends map1 with the values from map2
+
     for data in map2
         map1.push(data)
     end for
@@ -19,7 +21,9 @@ ClassLib = {}
 libs = {}
 libs.metax = null
 
-ClassLib.requires_metax = function()
+ClassLib.requires_metax = function() // -> null
+    // _internal
+    
     if libs.metax == null then
         libs.metax = include_lib("/lib/metaxploit.so")
     end if
@@ -33,19 +37,19 @@ end function
 Network = {}
 
 // Attributes
-Network.essid = null
-Network.bssid = null
-Network.power = null
-Network.to_string = null
+Network.essid = null // ESSID of the network
+Network.bssid = null // BSSID of the network
+Network.power = null // Signal power of the network
+Network.to_string = null // Network as a string
 
-Network.init = function(network_as_string)
+Network.init = function(network_as_string) // -> Network object
     network = new Network
     network._init(network_as_string)
 
     return network
 end function
 
-Network._init = function(network_as_string)
+Network._init = function(network_as_string) // -> null
     self.to_string = network_as_string
 
     network = network_as_string.split(" ")
@@ -60,7 +64,9 @@ Network._init = function(network_as_string)
     }
 end function
 
-Network.get_networks = function(device="wlan0")
+Network.get_networks = function(device="wlan0") // -> Map[Network objects]
+    // Gets a map of Network objects for each network computer has visible
+
     network_list = get_shell.host_computer.wifi_networks(device)
     networks = []
 
@@ -80,21 +86,22 @@ end function
 MetaLib = {}
 
 // Attributes
-MetaLib.net_session = null
-MetaLib.meta_lib = null
-MetaLib.port = null
-MetaLib.ip = null
-MetaLib.vulnerable_addresses = null
-MetaLib.exploits = null
+MetaLib.net_session = null // metax NetSession object
+MetaLib.meta_lib = null // metax MetaLib object
+MetaLib.port = null // Port this MetaLib object is referencing
+MetaLib.ip = null // Lan IP this MetaLib object is referencing
+MetaLib.pub_ip = null // Public IP this MetaLib object is referencing
+MetaLib.vulnerable_addresses = null // Map of vulnerable address
+MetaLib.exploits = null // Map of exploits
 
-MetaLib.init = function(pub_ip, port)
+MetaLib.init = function(pub_ip, port) // -> MetaLib object
     metalib = new MetaLib
     metalib._init(pub_ip, port)
 
     return metalib
 end function
 
-MetaLib._init = function(pub_ip, port)
+MetaLib._init = function(pub_ip, port) // -> null
     ClassLib.requires_metax()
 
     self.net_session = libs.metax.net_use(public_ip, port.port_number)
@@ -104,7 +111,9 @@ MetaLib._init = function(pub_ip, port)
     self.pub_ip = pub_ip
 end function
 
-MetaLib.find_vulnerabilities = function()
+MetaLib.find_vulnerabilities = function() // -> Map
+    // Finds all vulnerable addresses on this MetaLib object (public IP  & port)
+
     if not self.vulnerable_addresses == null then
         return self.vulnerable_addresses
     end if
@@ -113,7 +122,9 @@ MetaLib.find_vulnerabilities = function()
     return self.vulnerable_addresses
 end function
 
-MetaLib.find_exploits = function()
+MetaLib.find_exploits = function() // -> Map
+    // Finds all exploits from addresses found using MetaLib.find_vulnerabilities
+
     all_exploits = []
     for vuln in self.vulnerable_addresses
         segments = metax.scan_address(self.meta_lib, vuln).split("Unsafe check: ")[1:]
@@ -139,17 +150,19 @@ end function
 MetaSploit = {}
 
 // Attributes
-MetaSploit.net_sessions = null
-MetaSploit.router = null
+MetaSploit.net_sessions = null // Map of MetaLib objects
+MetaSploit.router = null // Router object
 
-MetaSploit.init = function(pub_ip=null)
+MetaSploit.init = function(pub_ip=null) // -> MetaSploit object
+    // Creates a new MetaSploit object
+
     metasploit = new MetaSploit
     metasploit._init(pub_ip)
 
     return metasploit
 end function
 
-MetaSploit._init = function(pub_ip=null)
+MetaSploit._init = function(pub_ip=null) // -> null
     if pub_ip == null then
         pub_ip = get_shell.host_computer.public_ip
     end if
@@ -162,7 +175,12 @@ MetaSploit._init = function(pub_ip=null)
     end for
 end function
 
-MetaSploit.find_vulnerabilities = function()
+MetaSploit.find_vulnerabilities = function() // -> Map
+    // Finds all vulnerabilites from child MetaLib objects
+    //
+    // This just calls each MetaLib objects `find_vulnerabilities` function and
+    // returns all results in a map
+
     vulns = []
     for metalib in self.net_sessions
         vulns = extend_map(vulns, metalib.find_vulnerabilities())
@@ -171,7 +189,13 @@ MetaSploit.find_vulnerabilities = function()
     return vulns
 end function
 
-MetaSploit.find_exploits = function()
+MetaSploit.find_exploits = function() // -> Map
+    // Finds all exploits from child MetaLib objects
+    //
+    // This just calls each MetaLib objects `find_exploits` function and
+    // returns all results in a map
+    // Note: Please call `MetaSploit.find_vulnerabilities` first or this probably won't return anything
+    
     exploits = []
     for metalib in self.net_sessions
         exploits = extend_map(exploits, metalib.find_exploits)
