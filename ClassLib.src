@@ -28,3 +28,50 @@ end function
 // End Initiator Class//
 ////////////////////////
 
+/////////////////////////////////
+// We define our network class //
+Network = {}
+
+// Attributes
+Network.essid = null
+Network.bssid = null
+Network.power = null
+Network.to_string = null
+
+Network.init = function(network_as_string)
+    network = new Network
+    network._init(network_as_string)
+
+    return network
+end function
+
+Network._init = function(network_as_string)
+    self.to_string = network_as_string
+
+    network = network_as_string.split(" ")
+    self.essid = network[2]
+    self.bssid = network[0]
+    self.power = network[1][:2]
+
+    self.to_map = {
+        "essid": self.essid,
+        "bssid": self.bssid,
+        "power": self.power,
+    }
+end function
+
+Network.get_networks = function(device="wlan0")
+    network_list = get_shell.host_computer.wifi_networks(device)
+    networks = []
+
+    for network in network_list
+        network_class = new Network
+        network_class.init(network)
+
+        networks.push(network_class)
+    end for
+end function
+
+// End Network Class //
+///////////////////////
+
