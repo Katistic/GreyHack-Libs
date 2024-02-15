@@ -75,3 +75,62 @@ end function
 // End Network Class //
 ///////////////////////
 
+//////////////////////////
+// Define MetaLib Class //
+
+MetaLib = {}
+
+// Attributes
+MetaLib.net_session = null
+MetaLib.meta_lib = null
+MetaLib.port = null
+MetaLib.ip = null
+MetaLib.vulnerable_addresses = null
+MetaLib.exploits = null
+
+MetaLib.init = function(pub_ip, port)
+    metalib = new MetaLib
+    metalib._init(pub_ip, port)
+
+    return metalib
+end function
+
+MetaLib._init = function(pub_ip, port)
+    ClassLib.requires_metax()
+
+    self.net_session = libs.metax.net_use(public_ip, port.port_number)
+    self.meta_lib = net_session.dump_lib
+    self.port = port
+    self.ip = port.get_lan_ip
+    self.pub_ip = pub_ip
+end function
+
+MetaLib.find_vulnerabilities = function()
+    if not self.vulnerable_addresses == null then
+        return self.vulnerable_addresses
+    end if
+
+    self.vulnerable_addresses = libs.metax.scan(self.meta_lib)
+    return self.vulnerable_addresses
+end function
+
+MetaLib.find_exploits = function()
+    all_exploits = []
+    for vuln in self.vulnerable_addresses
+        segments = metax.scan_address(self.meta_lib, vuln).split("Unsafe check: ")[1:]
+
+        exploits = []
+        for segment in segments
+            exploits.push(segment[segment.indexOf("<b>") + 3 : segment.indexOf("</b>")])
+        end for
+
+        all_exploits = extend_map(all_exploits, exploits)
+    end for
+
+    self.exploits = all_exploits
+    return all_exploits
+end function
+
+// End MetaLib Class //
+///////////////////////
+
