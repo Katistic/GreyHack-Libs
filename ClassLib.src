@@ -1,28 +1,19 @@
-//////////////////////
-// Helper Functions //
 /////////////////////////////////
 // Extensions for String class //
 
-extend_map = function(map1, map2) // -> Map
-    // Extends map1 with the values from map2
 string._is_in_string = function(container_string) // -> Boolean
     if container_string.hasIndex(self) == -1 then return false
     return true
 end function
 
-    for data in map2
-        map1.push(data)
 string._is_in_map = function(container_map) // -> Boolean
     for key in container_map.indexes() 
         if key == self then return true
     end for
 
-    return map1
     return false
 end function
 
-// End Helper Functions //
-//////////////////////////
 string._is_in_list = function(container_list) // -> Boolean
     for item in container_list
         if item == self then return true
@@ -186,7 +177,7 @@ MetaLib.find_exploits = function() // -> Map
             exploits.push(segment[segment.indexOf("<b>") + 3 : segment.indexOf("</b>")])
         end for
 
-        all_exploits = extend_map(all_exploits, exploits)
+        all_exploits.extend(exploits)
     end for
 
     self.exploits = all_exploits
@@ -235,7 +226,7 @@ MetaSploit.find_vulnerabilities = function() // -> Map
 
     vulns = []
     for metalib in self.net_sessions
-        vulns = extend_map(vulns, metalib.find_vulnerabilities())
+        vulns.extend(metalib.MetaLib.find_vulnerabilities())
     end for
 
     return vulns
@@ -250,7 +241,7 @@ MetaSploit.find_exploits = function() // -> Map
     
     exploits = []
     for metalib in self.net_sessions
-        exploits = extend_map(exploits, metalib.find_exploits)
+        exploits.extend(metalib.find_exploits())
     end for
 
     return exploits
