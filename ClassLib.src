@@ -1,18 +1,70 @@
 //////////////////////
 // Helper Functions //
+/////////////////////////////////
+// Extensions for String class //
 
 extend_map = function(map1, map2) // -> Map
     // Extends map1 with the values from map2
+string._is_in_string = function(container_string) // -> Boolean
+    if container_string.hasIndex(self) == -1 then return false
+    return true
+end function
 
     for data in map2
         map1.push(data)
+string._is_in_map = function(container_map) // -> Boolean
+    for key in container_map.indexes() 
+        if key == self then return true
     end for
 
     return map1
+    return false
 end function
 
 // End Helper Functions //
 //////////////////////////
+string._is_in_list = function(container_list) // -> Boolean
+    for item in container_list
+        if item == self then return true
+    end for
+
+    return false
+end function
+
+string.is_in = function(container) // -> Boolean
+    if container isa string then return self._is_in_string(container)
+    if container isa map then return self._is_in_map(container)
+    if container isa list then return self._is_in_list(container)
+
+    return false
+end function
+
+// End Extensions for String Class //
+/////////////////////////////////////
+
+///////////////////////////////
+// Extensions for List Class //
+
+list.extend = function(list2) // -> null
+    for data in list2
+        self.push(data)
+    end for
+end function
+
+// End Extensions for List Class//
+//////////////////////////////////
+
+//////////////////////////////
+// Extensions for Map Class //
+
+map.update = function(map2) // -> null
+    for key in map2
+        self[key] = map2[key]
+    end for
+end function
+
+// End Extensions for Map Class//
+/////////////////////////////////
 
 ////////////////////////////
 // Define initiator class //
