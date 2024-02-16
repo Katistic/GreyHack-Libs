@@ -134,8 +134,8 @@ MetaLib.meta_lib = null // metax MetaLib object
 MetaLib.port = null // Port this MetaLib object is referencing
 MetaLib.ip = null // Lan IP this MetaLib object is referencing
 MetaLib.pub_ip = null // Public IP this MetaLib object is referencing
-MetaLib.vulnerable_addresses = null // Map of vulnerable address
-MetaLib.exploits = null // Map of exploits
+MetaLib.vulnerable_addresses = null // List of vulnerable address
+MetaLib.exploits = null // List of exploits
 
 MetaLib.init = function(pub_ip, port) // -> MetaLib object
     metalib = new MetaLib
@@ -154,7 +154,7 @@ MetaLib._init = function(pub_ip, port) // -> null
     self.pub_ip = pub_ip
 end function
 
-MetaLib.find_vulnerabilities = function() // -> Map
+MetaLib.find_vulnerabilities = function() // -> List
     // Finds all vulnerable addresses on this MetaLib object (public IP  & port)
 
     if not self.vulnerable_addresses == null then
@@ -165,7 +165,7 @@ MetaLib.find_vulnerabilities = function() // -> Map
     return self.vulnerable_addresses
 end function
 
-MetaLib.find_exploits = function() // -> Map
+MetaLib.find_exploits = function() // -> List
     // Finds all exploits from addresses found using MetaLib.find_vulnerabilities
 
     all_exploits = []
@@ -218,7 +218,7 @@ MetaSploit._init = function(pub_ip=null) // -> null
     end for
 end function
 
-MetaSploit.find_vulnerabilities = function() // -> Map
+MetaSploit.find_vulnerabilities = function() // -> List
     // Finds all vulnerabilites from child MetaLib objects
     //
     // This just calls each MetaLib objects `find_vulnerabilities` function and
@@ -232,11 +232,11 @@ MetaSploit.find_vulnerabilities = function() // -> Map
     return vulns
 end function
 
-MetaSploit.find_exploits = function() // -> Map
+MetaSploit.find_exploits = function() // -> List
     // Finds all exploits from child MetaLib objects
     //
     // This just calls each MetaLib objects `find_exploits` function and
-    // returns all results in a map
+    // returns all results in a list
     // Note: Please call `MetaSploit.find_vulnerabilities` first or this probably won't return anything
     
     exploits = []
